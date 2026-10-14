@@ -17,8 +17,10 @@ app.add_middleware(
 
 # 🩺 Health Check & Ping Endpoints (Render Keep-Alive)
 # ==================================================================
-@app.get("/health")
-@app.get("/status")
+# Supports GET, HEAD, POST, and OPTIONS so uptime monitors (BetterStack, UptimeRobot, etc.)
+# never trigger a 405 Method Not Allowed error.
+@app.api_route("/health", methods=["GET", "HEAD", "POST", "OPTIONS"])
+@app.api_route("/status", methods=["GET", "HEAD", "POST", "OPTIONS"])
 def health_check():
     ist_tz = timezone(timedelta(hours=5, minutes=30))
     ist_time = datetime.now(ist_tz).strftime("%d/%m/%Y, %I:%M:%S %p")
@@ -28,7 +30,7 @@ def health_check():
         "timeIST": ist_time,
     }
 
-@app.get("/ping", response_class=PlainTextResponse)
+@app.api_route("/ping", methods=["GET", "HEAD", "POST", "OPTIONS"], response_class=PlainTextResponse)
 def ping():
     return "OK"
 
