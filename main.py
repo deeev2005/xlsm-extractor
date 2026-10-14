@@ -1,5 +1,7 @@
+from datetime import datetime, timezone, timedelta
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
 from oletools.olevba import VBA_Parser
 
 app = FastAPI()
@@ -12,6 +14,23 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 🩺 Health Check & Ping Endpoints (Render Keep-Alive)
+# ==================================================================
+@app.get("/health")
+@app.get("/status")
+def health_check():
+    ist_tz = timezone(timedelta(hours=5, minutes=30))
+    ist_time = datetime.now(ist_tz).strftime("%d/%m/%Y, %I:%M:%S %p")
+    return {
+        "status": "ok",
+        "service": "xlsm-extractor",
+        "timeIST": ist_time,
+    }
+
+@app.get("/ping", response_class=PlainTextResponse)
+def ping():
+    return "OK"
 
 @app.post("/extract-vba")
 async def extract_vba(file: UploadFile = File(...)):
