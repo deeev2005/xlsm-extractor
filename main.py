@@ -21,7 +21,7 @@ def verify_api_key(api_key: str = Depends(api_key_header)):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://script.google.com"], # Restricted to Google Apps Script environment
+    allow_origins=["*"], # Reverted to wildcard to support dynamic Google Workspace iframes
     allow_credentials=True,
     allow_methods=["POST", "OPTIONS", "GET"],
     allow_headers=["*"],
