@@ -21,7 +21,7 @@ def verify_api_key(api_key: str = Depends(api_key_header)):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Reverted to wildcard to support dynamic Google Workspace iframes
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["POST", "OPTIONS", "GET"],
     allow_headers=["*"],
@@ -56,7 +56,7 @@ async def extract_vba(file: UploadFile = File(...), api_key: str = Depends(verif
         if not file_bytes:
             raise HTTPException(status_code=400, detail="No file data received.")
             
-        # Parse the binary stream from memory
+        # Parse the binary stream from memory (Handles both .xls and .xlsm)
         vba_parser = VBA_Parser(file.filename, data=bytes(file_bytes))
         
         if not vba_parser.detect_vba_macros():
@@ -70,7 +70,7 @@ async def extract_vba(file: UploadFile = File(...), api_key: str = Depends(verif
         return {"vba": extracted_code}
         
     except HTTPException:
-        raise # Pass intended HTTP errors through
+        raise 
     except Exception as e:
         # 3. Log the actual error to Render console, but hide it from the public response
         logging.error(f"VBA Extraction Failed: {str(e)}")
